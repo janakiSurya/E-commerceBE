@@ -16,7 +16,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   // Read users from JSON file
-  const usersPath = path.join(__dirname, "users.json");
+  const usersPath = path.join(__dirname, "..", "users.json");
   fs.readFile(usersPath, "utf8", (err, data) => {
     if (err) {
       return res.status(500).json({ message: "Error reading user data" });
@@ -38,6 +38,4 @@ app.post("/login", (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+module.exports = app;
