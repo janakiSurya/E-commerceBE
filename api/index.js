@@ -9,23 +9,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection handling for serverless environment
+// MongoDB connection optimization for serverless
 let cachedDb = null;
 
 async function connectToDatabase() {
-  if (cachedDb) {
+  if (cachedDb && mongoose.connection.readyState === 1) {
     return cachedDb;
   }
 
+  // Set connection timeout
   const mongoURI =
-    process.env.MONGODB_URI ||
     "mongodb+srv://pavangouthu:Notimportant@usermanagementcluster.ryfbq.mongodb.net/userManagement?retryWrites=true&w=majority";
 
   try {
     const db = await mongoose.connect(mongoURI, {
-      // These options help with serverless deployments
       bufferCommands: false,
       maxPoolSize: 1,
+      serverSelectionTimeoutMS: 5000, // 5 seconds timeout
+      socketTimeoutMS: 45000, // 45 seconds timeout
+      connectTimeoutMS: 10000, // 10 seconds timeout
+      keepAlive: true,
+      keepAliveInitialDelay: 300000, // 5 minutes
     });
 
     cachedDb = db;
@@ -36,46 +40,70 @@ async function connectToDatabase() {
   }
 }
 
-// Wrap routes in async handlers with proper error handling
-app.get("/", async (req, res) => {
-  try {
-    await connectToDatabase();
-    res.status(200).send("Welcome to the E-commerce API!");
-  } catch (error) {
-    console.error("Error in home route:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
+// Health check route
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
+// Home route with quick response
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to the E-commerce API!");
+});
+
+// Login route with timeout handling
 app.post("/login", async (req, res) => {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Database connection timeout")), 10000)
+  );
+
   try {
-    await connectToDatabase();
+    await Promise.race([connectToDatabase(), timeoutPromise]);
+
     const { email, password } = req.body;
 
-    // Replace this with actual user authentication logic
+    // Quick validation before DB operations
+    if (!email || !password) {
+      return res.status(400).json({ message: "Missing credentials" });
+    }
+
     if (email === "test@example.com" && password === "password123") {
       return res.status(200).json({ message: "Login successful!" });
     }
     return res.status(401).json({ message: "Invalid credentials" });
   } catch (error) {
-    console.error("Error in login route:", error);
+    console.error("Login error:", error);
+    if (error.message === "Database connection timeout") {
+      return res
+        .status(503)
+        .json({ message: "Service temporarily unavailable" });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 });
 
+// Registration route with timeout handling
 app.post("/register", async (req, res) => {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Database connection timeout")), 10000)
+  );
+
   try {
-    await connectToDatabase();
+    await Promise.race([connectToDatabase(), timeoutPromise]);
+
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
 
-    // Replace this with actual user registration logic
     return res.status(200).json({ message: "Registration successful!" });
   } catch (error) {
-    console.error("Error in register route:", error);
+    console.error("Registration error:", error);
+    if (error.message === "Database connection timeout") {
+      return res
+        .status(503)
+        .json({ message: "Service temporarily unavailable" });
+    }
     res.status(500).json({ message: "Internal server error" });
   }
 });
