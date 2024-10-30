@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bcrypt = require("bcrypt"); // Import bcrypt for password hashing
 
 const app = express();
 
@@ -28,9 +29,6 @@ async function connectToDatabase() {
       serverSelectionTimeoutMS: 5000, // 5 seconds timeout
       socketTimeoutMS: 45000, // 45 seconds timeout
       connectTimeoutMS: 10000, // 10 seconds timeout
-      // Remove the unsupported options
-      // keepAlive: true, // REMOVE THIS
-      // keepAliveInitialDelay: 300000, // REMOVE THIS
     });
 
     cachedDb = db;
@@ -40,6 +38,21 @@ async function connectToDatabase() {
     throw error;
   }
 }
+
+// User model
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+});
+
+const User = mongoose.model("User", userSchema);
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -67,9 +80,17 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Missing credentials" });
     }
 
-    if (email === "test@example.com" && password === "password123") {
-      return res.status(200).json({ message: "Login successful!" });
+    // Check for user in the database
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // Compare hashed password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        return res.status(200).json({ message: "Login successful!" });
+      }
     }
+
     return res.status(401).json({ message: "Invalid credentials" });
   } catch (error) {
     console.error("Login error:", error);
@@ -96,6 +117,13 @@ app.post("/register", async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save new user to the database
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
 
     return res.status(200).json({ message: "Registration successful!" });
   } catch (error) {
