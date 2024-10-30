@@ -1,8 +1,15 @@
 {
+    "version": 2,
     "functions": {
       "api/*.js": {
-        "runtime": "nodejs14.x" 
+        "runtime": "nodejs18.x" // Ensure the version is correct
       }
-    }
+    },
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/api/index.js" // Adjust if your main file has a different name
+      }
+    ]
   }
   
