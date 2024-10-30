@@ -1,15 +1,18 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// MongoDB connection string
+const mongoURI =
+  "mongodb+srv://pavangouthu:Notimportant@usermanagementcluster.ryfbq.mongodb.net/userManagement?retryWrites=true&w=majority";
+
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -22,20 +25,26 @@ mongoose
 // Login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
+
+  // Replace this with actual user authentication logic
   if (email === "test@example.com" && password === "password123") {
     return res.status(200).json({ message: "Login successful!" });
   }
+
   return res.status(401).json({ message: "Invalid credentials" });
 });
 
 // Registration route
 app.post("/register", async (req, res) => {
   const { email, password } = req.body;
+
+  // Replace this with actual user registration logic (e.g., saving to the database)
   if (email && password) {
     // Here you would typically save the user to the database
     // For now, just simulate success
     return res.status(200).json({ message: "Registration successful!" });
   }
+
   return res.status(400).json({ message: "Please fill in all fields" });
 });
 
