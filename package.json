@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "api/index.js",
   "scripts": {
-    "start": "node api/index.js", 
+    "start": "node api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -12,6 +12,8 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.7.3",
     "nodemon": "^3.1.7"
   }
 }

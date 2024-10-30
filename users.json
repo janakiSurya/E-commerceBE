@@ -1,15 +1,30 @@
 [
-    {
-      "email": "admin@example.com",
-      "password": "password123"
-    },
-    {
-      "email": "user1@example.com",
-      "password": "mypassword"
-    },
-    {
-      "email": "user2@example.com",
-      "password": "secret123"
-    }
-  ]
-  
+  {
+    "email": "pavan.gouthu@gmail.com",
+    "password": "12345678"
+  },
+  {
+    "email": "user1@example.com",
+    "password": "mypassword"
+  },
+  {
+    "email": "user2@example.com",
+    "password": "secret123"
+  },
+  {
+    "email": "surya.gouthu@gmail.com",
+    "password": "$2b$10$HG..h6w1njGrj4IrltbfwO0jwLLARS4bL6lKxP1fH88qX0CTrSkwS"
+  },
+  {
+    "email": "user3@example.com",
+    "password": "password123"
+  },
+  {
+    "email": "hellokitty@gmail.com",
+    "password": "$2b$10$DCdH/F3p.XGwRP2BzetdfukB3PYhnWOlrKyIhLBZqgN.6Z9FJ.6vK"
+  },
+  {
+    "email": "vaishnavi@gmail.com",
+    "password": "$2b$10$foOPQGVWzyTtDWB0BXO7AOqA1NzeapQf3XalfuBeYqRgJPTfXYUT."
+  }
+]
