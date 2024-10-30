@@ -12,15 +12,17 @@ const mongoURI =
 
 // MongoDB connection
 mongoose
-  .connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(mongoURI)
   .then(() => console.log("Connected to MongoDB!"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
     process.exit(1); // Exit the process if unable to connect
   });
+
+// Home route
+app.get("/", (req, res) => {
+  res.send("Welcome to the E-commerce API!");
+});
 
 // Login route
 app.post("/login", async (req, res) => {
