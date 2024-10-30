@@ -28,8 +28,9 @@ async function connectToDatabase() {
       serverSelectionTimeoutMS: 5000, // 5 seconds timeout
       socketTimeoutMS: 45000, // 45 seconds timeout
       connectTimeoutMS: 10000, // 10 seconds timeout
-      keepAlive: true,
-      keepAliveInitialDelay: 300000, // 5 minutes
+      // Remove the unsupported options
+      // keepAlive: true, // REMOVE THIS
+      // keepAliveInitialDelay: 300000, // REMOVE THIS
     });
 
     cachedDb = db;
